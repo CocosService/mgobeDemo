@@ -24,6 +24,7 @@ const config = {
   reconnectInterval: 1000,
   resendInterval: 1000,
   resendTimeout: 10000,
+  cacertNativeUrl: "",
 };
 
 const playerInfo = {
@@ -76,6 +77,10 @@ cc.Class({
       default: null,
       type: cc.Node
     },
+    cacertFile: {
+      default: null,
+      type: cc.Asset
+    },
     joined: false,
     synced: false,
     lang: "zh",
@@ -103,6 +108,8 @@ cc.Class({
   init: function () {
     const _self = this;
     // MGOBE.DebuggerLog.enable = true;
+    // 如果是原生平台，则加载 Cert 证书，否则会提示 WSS 错误
+    if (cc.sys.isNative) config.cacertNativeUrl = this.cacertFile.nativeUrl;
     MGOBE.Listener.init(gameInfo, config, event => {
       console.log(event);
       if (event.code === 0) {
