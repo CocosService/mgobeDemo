@@ -109,7 +109,7 @@ cc.Class({
     const _self = this;
     // MGOBE.DebuggerLog.enable = true;
     // 如果是原生平台，则加载 Cert 证书，否则会提示 WSS 错误
-    if (cc.sys.isNative) config.cacertNativeUrl = this.cacertFile.nativeUrl;
+    if (cc.sys.isNative) config.cacertNativeUrl = cc.loader.md5Pipe ? cc.loader.md5Pipe.transformURL(this.cacertFile.nativeUrl) : this.cacertFile.nativeUrl;
     MGOBE.Listener.init(gameInfo, config, event => {
       console.log(event);
       if (event.code === 0) {
