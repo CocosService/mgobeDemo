@@ -1,21 +1,21 @@
-const gameId = '';
-const secretKey = '';
-const serverUrl = '';
+const gameId = ''; //替换为控制台上的 游戏 ID
+const secretKey = ''; //替换为控制台上的 游戏 Key
+const serverUrl = ''; //替换为控制台上的 域名
 if (CC_EDITOR) {
   if (!Editor.CocosService_gmeDemo) {
     Editor.CocosService_gmeDemo = true;
-    Editor.log("欢迎使用腾讯云 MGOBE 小游戏联机对战引擎服务！");
-    Editor.log("这是一个简单的 MGOBE 示例 Demo，通过本示例您可以快速了解如何使用 MGOBE 来实现小游戏联机对战！");
+    Editor.log(Editor.lang === 'zh' ? "欢迎使用腾讯云 MGOBE 小游戏联机对战引擎服务！" : "Welcome to Tencent Cloud MGOBE online game engine service!");
+    Editor.log(Editor.lang === 'zh' ? "这是一个简单的 MGOBE 示例 Demo，通过本示例您可以快速了解如何使用 MGOBE 来实现小游戏联机对战！" : "This is a simple MGOBE sample demo. Through this example, you can quickly learn how to use MGOBE to achieve online mini-games!");
   }
   if (gameId === '' || secretKey === '' || serverUrl === '') {
-    Editor.log("您需要首先从右侧的服务面板开启 腾讯云MGOBE 服务，然后从 腾讯云MGOBE 服务面板前往腾讯云控制台获取 SDK 初始化参数并填写到示例代码中的相关位置，以使 Demo 能够运行。");
-    Editor.log("初始化参数所在位置：assets/Script/index.js 文件最顶部");
+    Editor.log(Editor.lang === 'zh' ? "您需要首先从右侧的服务面板开启 腾讯云MGOBE 服务，然后从 腾讯云MGOBE 服务面板前往腾讯云控制台获取 SDK 初始化参数并填写到示例代码中的相关位置，以使 Demo 能够运行。" : "You need to start the Tencent Cloud MGOBE service from the service panel on the right, then go to the Tencent Cloud console from the Tencent Cloud MGOBE service panel to get the SDK initialization parameters and fill in the relevant locations in the sample code to enable the Demo to run.");
+    Editor.log(Editor.lang === 'zh' ? "初始化参数所在位置：assets/Script/index.js 文件最顶部" : "Location of initialization parameters: the top of the assets/Script/index.js file");
   }
 }
 
 const gameInfo = {
   gameId: gameId,
-  openId: 'openid_123_test' + Math.random(),
+  openId: 'openid_test' + Math.random(), //自定义的用户唯一ID
   secretKey: secretKey,
 };
 const config = {
@@ -28,7 +28,7 @@ const config = {
 };
 
 const playerInfo = {
-  name: "Tom"
+  name: "Tom" + Math.random()
 };
 
 const matchRoomPara = {
@@ -97,6 +97,10 @@ cc.Class({
     this.lang = cc.sys.language;
     this.labelJoin.string = '加入房间';
     this.labelFrameSync.string = '开始帧同步';
+    this.tempText = "";
+    this.tempSize = 0;
+    this.tempTop = 0;
+    cc.debug.setDisplayStats(false);
   },
 
   onDestroy: function () {},
@@ -210,6 +214,8 @@ cc.Class({
         data: 'asdgjasdhgkasdf',
         id: "xxxxxxxx" + Math.random()
       }
+    }, (err)=>{
+      //console.log("err", err);
     })
   },
 
@@ -232,7 +238,7 @@ cc.Class({
     this.sendFrame();
     console.log("帧广播", event.data.frame);
     if (event.data.frame.items && event.data.frame.items.length > 0) {
-      this.printLog("帧广播" + JSON.stringify(event.data.frame.items));
+      //this.printLog("帧广播" + JSON.stringify(event.data.frame.items));
       console.log("帧广播", event.data.frame);
     }
   },
@@ -240,18 +246,18 @@ cc.Class({
   onStartFrameSync: function (event) {
     this.synced = true;
     this.labelFrameSync.string = '停止帧同步';
-    this.printLog("开始帧同步");
+    //this.printLog("开始帧同步\n");
   },
 
   onStopFrameSync: function (event) {
     this.synced = false;
     this.labelFrameSync.string = '开始帧同步';
-    this.printLog("停止帧同步");
+    //this.printLog("停止帧同步\n");
   },
 
   onRecvFromGameSvr: function (event) {
     console.log("新自定义服务消息", event);
-    this.printLog("新自定义服务消息" + JSON.stringify(event));
+    //this.printLog("新自定义服务消息" + JSON.stringify(event));
   },
 
   printCode: function (code) {
@@ -263,20 +269,31 @@ cc.Class({
   },
 
   printLog: function (info) {
-    if (this.logs.length > 20) this.logs = [];
-    this.logs.push(info);
-    var totalCount = this.logs.length;
-    this.logListView.content.removeAllChildren(true);
-    for (var i = 0; i < totalCount; i++) {
-      var item = cc.instantiate(this.itemTemplate);
-      this.logListView.content.addChild(item);
-      item.getComponent('Item').updateItem(this.logs[i]);
+    if (this.tempSize > 100) {
+      this.tempSize = 0;
+      this.logListView.content.removeAllChildren(true);
     }
-    this.logListView.scrollToBottom(0.1);
+    this.tempSize = 0;
+    this.tempText = this.tempText + info;
   },
 
   // called every frame
   update: function (dt) {
+    if (this.tempText.length <= 0)
+        return;
 
+    var item = cc.instantiate(this.itemTemplate);
+
+    this.logListView.content.addChild(item);
+    item.getComponent('Item').updateItem(this.tempText);
+
+    var lab = item.getComponent(cc.Label);
+    lab._forceUpdateRenderData(true); 
+
+    var layout = this.logListView.content.getComponent(cc.Layout);
+    layout.updateLayout()
+
+    this.logListView.scrollToBottom(1/60);
+    this.tempText = "";
   },
 });
