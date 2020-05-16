@@ -2,8 +2,8 @@ const gameId = ''; //替换为控制台上的 游戏 ID
 const secretKey = ''; //替换为控制台上的 游戏 Key
 const serverUrl = ''; //替换为控制台上的 域名
 if (CC_EDITOR) {
-  if (!Editor.CocosService_gmeDemo) {
-    Editor.CocosService_gmeDemo = true;
+  if (!Editor.CocosService_mgobeDemo) {
+    Editor.CocosService_mgobeDemo = true;
     Editor.log(Editor.lang === 'zh' ? "欢迎使用腾讯云 MGOBE 小游戏联机对战引擎服务！" : "Welcome to Tencent Cloud MGOBE online game engine service!");
     Editor.log(Editor.lang === 'zh' ? "这是一个简单的 MGOBE 示例 Demo，通过本示例您可以快速了解如何使用 MGOBE 来实现小游戏联机对战！" : "This is a simple MGOBE sample demo. Through this example, you can quickly learn how to use MGOBE to achieve online mini-games!");
   }
