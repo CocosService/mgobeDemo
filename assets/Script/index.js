@@ -211,7 +211,7 @@ cc.Class({
       this.room.startFrameSync({}, event => {
         console.log(event);
         if (event.code === 0) {
-          _self.printLog("开始帧同步成功");
+          _self.printLog("开始帧同步成功，请到控制台查看具体帧同步信息");
           _self.labelFrameSync.string = "停止帧同步";
           _self.synced = true;
         }
