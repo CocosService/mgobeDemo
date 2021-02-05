@@ -1,22 +1,24 @@
 const gameId = ''; // 请替换为控制台上的“游戏ID”
 const secretKey = ''; // 请替换为控制台上的“游戏Key”
 const url = ''; // 请替换为控制台上的“域名”
+const cacertNativeUrl = ''; // 证书文件路径，原生平台下需要用到，否则会出现WSS错误。
 
-const gameInfo = {
+const gameInfo: MGOBE.types.GameInfoPara = {
     gameId,
     secretKey,
     openId: `openid_${generateRandomInteger(1, 100000)}_test`,
 }
 
-const config = {
+const config: MGOBE.types.ConfigPara = {
     url,
     reconnectMaxTimes: 5,
     reconnectInterval: 1000,
     resendInterval: 1000,
     resendTimeout: 1000 * 10,
+    cacertNativeUrl
 }
 
-import { _decorator, Component, Node, Prefab, Button, instantiate, Label, ScrollView } from 'cc';
+import { _decorator, Component, Node, Prefab, Button, instantiate, Label, ScrollView, Asset, sys, loader } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('Controller')
@@ -42,6 +44,9 @@ export class Controller extends Component {
     public joinLeaveRoomLabel: Label = null!;
     @property({ type: Label })
     public startStopFrameSyncLabel: Label = null!;
+
+    @property({ type: Asset })
+    public cacertFile: Asset = null!;
 
     private room: MGOBE.Room | null = null;
     private joinedRoom: boolean = false;
@@ -93,6 +98,13 @@ export class Controller extends Component {
 
     onInitButtonClicked() {
         this.initButton.interactable = false;
+
+        if (sys.isNative) {
+            console.log('isNative!!');
+            config.cacertNativeUrl = loader.md5Pipe ?
+                loader.md5Pipe.transformURL(this.cacertFile.nativeUrl) :
+                this.cacertFile.nativeUrl;
+        }
 
         MGOBE.Listener.init(gameInfo, config, (event) => {
             if (event.code === MGOBE.ErrCode.EC_OK) {
