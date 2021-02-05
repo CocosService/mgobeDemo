@@ -1,7 +1,6 @@
 const gameId = ''; // 请替换为控制台上的“游戏ID”
 const secretKey = ''; // 请替换为控制台上的“游戏Key”
 const url = ''; // 请替换为控制台上的“域名”
-const cacertNativeUrl = ''; // 证书文件路径，原生平台下需要用到，否则会出现WSS错误。
 
 const gameInfo: MGOBE.types.GameInfoPara = {
     gameId,
@@ -15,7 +14,7 @@ const config: MGOBE.types.ConfigPara = {
     reconnectInterval: 1000,
     resendInterval: 1000,
     resendTimeout: 1000 * 10,
-    cacertNativeUrl
+    cacertNativeUrl: '',
 }
 
 import { _decorator, Component, Node, Prefab, Button, instantiate, Label, ScrollView, Asset, sys, loader } from 'cc';
