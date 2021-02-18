@@ -23,29 +23,29 @@ const { ccclass, property } = _decorator;
 @ccclass('Controller')
 export class Controller extends Component {
     @property({ type: Node })
-    public logView: Node = null!;
+    logView: Node = null!;
 
     @property({ type: Prefab })
-    public logItem: Prefab = null!;
+    logItem: Prefab = null!;
 
     @property({ type: Button })
-    public initButton: Button = null!;
+    initButton: Button = null!;
     @property({ type: Button })
-    public joinLeaveRoomButton: Button = null!;
+    joinLeaveRoomButton: Button = null!;
     @property({ type: Button })
-    public sendMessageButton: Button = null!;
+    sendMessageButton: Button = null!;
     @property({ type: Button })
-    public startStopFrameSyncButton: Button = null!;
+    startStopFrameSyncButton: Button = null!;
     @property({ type: Button })
-    public sendToServerButton: Button = null!;
+    sendToServerButton: Button = null!;
 
     @property({ type: Label })
-    public joinLeaveRoomLabel: Label = null!;
+    joinLeaveRoomLabel: Label = null!;
     @property({ type: Label })
-    public startStopFrameSyncLabel: Label = null!;
+    startStopFrameSyncLabel: Label = null!;
 
     @property({ type: Asset })
-    public cacertFile: Asset = null!;
+    cacertFile: Asset = null!;
 
     private room: MGOBE.Room | null = null;
     private joinedRoom: boolean = false;
