@@ -17,7 +17,7 @@ const config: MGOBE.types.ConfigPara = {
     cacertNativeUrl: '',
 }
 
-import { _decorator, Component, Node, Prefab, Button, instantiate, Label, ScrollView, Asset, sys, loader } from 'cc';
+import { _decorator, Component, Node, Prefab, Button, instantiate, Label, ScrollView, Asset, sys, loader, log } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('Controller')
@@ -75,19 +75,19 @@ export class Controller extends Component {
         const logItem = instantiate(this.logItem);
         const label = logItem.getComponent(Label);
         if (!label) {
-            console.log('无法获取Label组件');
+            log('无法获取Label组件');
             return;
         }
         label.string = msgs.join(" ");
 
         const scrollView = this.logView.getComponent(ScrollView);
         if (!scrollView) {
-            console.log('无法获取ScrollView组件');
+            log('无法获取ScrollView组件');
             return;
         }
 
         if (!scrollView.content) {
-            console.log('scrollView没有content成员');
+            log('scrollView没有content成员');
             return;
         }
 
@@ -99,7 +99,6 @@ export class Controller extends Component {
         this.initButton.interactable = false;
 
         if (sys.isNative) {
-            console.log('isNative!!');
             config.cacertNativeUrl = loader.md5Pipe ?
                 loader.md5Pipe.transformURL(this.cacertFile.nativeUrl) :
                 this.cacertFile.nativeUrl;
@@ -107,7 +106,7 @@ export class Controller extends Component {
 
         MGOBE.Listener.init(gameInfo, config, (event) => {
             if (event.code === MGOBE.ErrCode.EC_OK) {
-                this.log("初始化成功");
+                log("初始化成功");
 
                 this.room = new MGOBE.Room();
                 MGOBE.Listener.add(this.room);
@@ -121,7 +120,7 @@ export class Controller extends Component {
 
                 this.joinLeaveRoomButton.interactable = true;
             } else {
-                this.log('初始化失败');
+                log('初始化失败');
                 this.initButton.interactable = true;
             }
         });
@@ -129,7 +128,7 @@ export class Controller extends Component {
 
     onJoinLeaveRoomButtonClicked() {
         if (!this.room) {
-            console.log('房间对象不存在');
+            log('房间对象不存在');
             return;
         }
 
@@ -187,7 +186,7 @@ export class Controller extends Component {
 
     onSendMessageButtonClicked() {
         if (!this.room) {
-            console.log('房间对象不存在');
+            log('房间对象不存在');
             return;
         }
 
@@ -205,7 +204,7 @@ export class Controller extends Component {
 
     onStartStopFrameSyncButtonClicked() {
         if (!this.room) {
-            console.log('房间对象不存在');
+            log('房间对象不存在');
             return;
         }
 
@@ -228,12 +227,12 @@ export class Controller extends Component {
                 }
             })
         }
-        console.log(this.startStopFrameSyncLabel.string);
+        log(this.startStopFrameSyncLabel.string);
     }
 
     onSendToServerButtonClicked() {
         if (!this.room) {
-            console.log('房间对象不存在');
+            log('房间对象不存在');
             return;
         }
 
@@ -259,7 +258,7 @@ export class Controller extends Component {
 
     private onRecvFrame(event: MGOBE.types.BroadcastEvent<MGOBE.types.RecvFrameBst>): any {
         if (!this.room) {
-            console.log('房间对象不存在');
+            log('房间对象不存在');
             return;
         }
 
@@ -270,7 +269,7 @@ export class Controller extends Component {
                 id: "id_" + generateRandomInteger(1, 1000),
             },
         }, (_event) => { });
-        console.log('帧广播', event.data.frame);
+        log('帧广播', event.data.frame);
     }
 
     private onStartFrameSync(_event: MGOBE.types.BroadcastEvent<MGOBE.types.StartFrameSyncBst>): any {
