@@ -6,7 +6,7 @@ const gameInfo: MGOBE.types.GameInfoPara = {
     gameId,
     secretKey,
     openId: `openid_${generateRandomInteger(1, 100000)}_test`,
-}
+};
 
 const config: MGOBE.types.ConfigPara = {
     url,
@@ -15,9 +15,22 @@ const config: MGOBE.types.ConfigPara = {
     resendInterval: 1000,
     resendTimeout: 1000 * 10,
     cacertNativeUrl: '',
-}
+};
 
-import { _decorator, Component, Node, Prefab, Button, instantiate, Label, ScrollView, Asset, sys, loader, log } from 'cc';
+import {
+    _decorator,
+    Component,
+    Node,
+    Prefab,
+    Button,
+    instantiate,
+    Label,
+    ScrollView,
+    Asset,
+    sys,
+    loader,
+    log,
+} from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('Controller')
@@ -78,7 +91,7 @@ export class Controller extends Component {
             log('无法获取Label组件');
             return;
         }
-        label.string = msgs.join(" ");
+        label.string = msgs.join(' ');
 
         const scrollView = this.logView.getComponent(ScrollView);
         if (!scrollView) {
@@ -99,14 +112,14 @@ export class Controller extends Component {
         this.initButton.interactable = false;
 
         if (sys.isNative) {
-            config.cacertNativeUrl = loader.md5Pipe ?
-                loader.md5Pipe.transformURL(this.cacertFile.nativeUrl) :
-                this.cacertFile.nativeUrl;
+            config.cacertNativeUrl = loader.md5Pipe
+                ? loader.md5Pipe.transformURL(this.cacertFile.nativeUrl)
+                : this.cacertFile.nativeUrl;
         }
 
         MGOBE.Listener.init(gameInfo, config, (event) => {
             if (event.code === MGOBE.ErrCode.EC_OK) {
-                log("初始化成功");
+                log('初始化成功');
 
                 this.room = new MGOBE.Room();
                 MGOBE.Listener.add(this.room);
@@ -180,7 +193,7 @@ export class Controller extends Component {
                 if (event.data) {
                     this.log('data:', event.data);
                 }
-            })
+            });
         }
     }
 
@@ -225,7 +238,7 @@ export class Controller extends Component {
                 if (event.code !== MGOBE.ErrCode.EC_OK) {
                     this.log('error:', event);
                 }
-            })
+            });
         }
         log(this.startStopFrameSyncLabel.string);
     }
@@ -244,45 +257,62 @@ export class Controller extends Component {
         this.room.sendToGameSvr(sendToGameSrvPara, (event) => this.log(event));
     }
 
-    private onJoinRoom(event: MGOBE.types.BroadcastEvent<MGOBE.types.JoinRoomBst>): any {
+    private onJoinRoom(
+        event: MGOBE.types.BroadcastEvent<MGOBE.types.JoinRoomBst>
+    ): any {
         this.log('新玩家加入', event.data.joinPlayerId);
     }
 
-    private onLeaveRoom(event: MGOBE.types.BroadcastEvent<MGOBE.types.LeaveRoomBst>): any {
+    private onLeaveRoom(
+        event: MGOBE.types.BroadcastEvent<MGOBE.types.LeaveRoomBst>
+    ): any {
         this.log('玩家退出', event.data.leavePlayerId);
     }
 
-    private onRecvFromClient(event: MGOBE.types.BroadcastEvent<MGOBE.types.RecvFromClientBst>): any {
+    private onRecvFromClient(
+        event: MGOBE.types.BroadcastEvent<MGOBE.types.RecvFromClientBst>
+    ): any {
         this.log('新消息', event.data.msg);
     }
 
-    private onRecvFrame(event: MGOBE.types.BroadcastEvent<MGOBE.types.RecvFrameBst>): any {
+    private onRecvFrame(
+        event: MGOBE.types.BroadcastEvent<MGOBE.types.RecvFrameBst>
+    ): any {
         if (!this.room) {
             log('房间对象不存在');
             return;
         }
 
-        this.room.sendFrame({
-            data: {
-                cmd: "cmd_" + generateRandomInteger(1, 1000),
-                data: "data_" + generateRandomInteger(1, 1000),
-                id: "id_" + generateRandomInteger(1, 1000),
+        this.room.sendFrame(
+            {
+                data: {
+                    cmd: 'cmd_' + generateRandomInteger(1, 1000),
+                    data: 'data_' + generateRandomInteger(1, 1000),
+                    id: 'id_' + generateRandomInteger(1, 1000),
+                },
             },
-        }, (_event) => { });
+            (_event) => {}
+        );
         log('帧广播', event.data.frame);
     }
 
-    private onStartFrameSync(_event: MGOBE.types.BroadcastEvent<MGOBE.types.StartFrameSyncBst>): any {
+    private onStartFrameSync(
+        _event: MGOBE.types.BroadcastEvent<MGOBE.types.StartFrameSyncBst>
+    ): any {
         this.startStopFrameSyncLabel.string = '停止帧同步';
         this.frameSyncStarted = true;
     }
 
-    private onStopFrameSync(_event: MGOBE.types.BroadcastEvent<MGOBE.types.StopFrameSyncBst>): any {
+    private onStopFrameSync(
+        _event: MGOBE.types.BroadcastEvent<MGOBE.types.StopFrameSyncBst>
+    ): any {
         this.startStopFrameSyncLabel.string = '开始帧同步';
         this.frameSyncStarted = false;
     }
 
-    private onRecvFromGameSvr(event: MGOBE.types.BroadcastEvent<MGOBE.types.RecvFromGameSvrBst>): any {
+    private onRecvFromGameSvr(
+        event: MGOBE.types.BroadcastEvent<MGOBE.types.RecvFromGameSvrBst>
+    ): any {
         this.log('自定义服务器消息', event.data);
     }
 }
