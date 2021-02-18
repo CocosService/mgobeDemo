@@ -307,7 +307,7 @@
     "_priority": 1073741824,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 395.6043956043956,
+    "_orthoHeight": 465.7660626029654,
     "_near": 1,
     "_far": 2000,
     "_color": {
@@ -3502,7 +3502,7 @@
     "_enabled": true,
     "__prefab": null,
     "logView": {
-      "__id__": 18
+      "__id__": 34
     },
     "logItem": {
       "__uuid__": "54942a0e-4259-4575-89d0-c2374f4c569d"

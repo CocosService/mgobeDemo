@@ -35,8 +35,8 @@ const { ccclass, property } = _decorator;
 
 @ccclass('Controller')
 export class Controller extends Component {
-    @property({ type: Node })
-    logView: Node = null!;
+    @property({ type: ScrollView })
+    logView: ScrollView = null!;
 
     @property({ type: Prefab })
     logItem: Prefab = null!;
@@ -93,19 +93,13 @@ export class Controller extends Component {
         }
         label.string = msgs.join(' ');
 
-        const scrollView = this.logView.getComponent(ScrollView);
-        if (!scrollView) {
-            log('无法获取ScrollView组件');
+        if (!this.logView.content) {
+            log('logView没有content成员');
             return;
         }
 
-        if (!scrollView.content) {
-            log('scrollView没有content成员');
-            return;
-        }
-
-        scrollView.content.addChild(logItem);
-        scrollView.scrollToBottom(0.5);
+        this.logView.content.addChild(logItem);
+        this.logView.scrollToBottom(0.5);
     }
 
     onInitButtonClicked() {
@@ -119,7 +113,7 @@ export class Controller extends Component {
 
         MGOBE.Listener.init(gameInfo, config, (event) => {
             if (event.code === MGOBE.ErrCode.EC_OK) {
-                log('初始化成功');
+                this.log('初始化成功');
 
                 this.room = new MGOBE.Room();
                 MGOBE.Listener.add(this.room);
@@ -133,7 +127,7 @@ export class Controller extends Component {
 
                 this.joinLeaveRoomButton.interactable = true;
             } else {
-                log('初始化失败');
+                this.log('初始化失败');
                 this.initButton.interactable = true;
             }
         });

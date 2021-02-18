@@ -112,11 +112,11 @@
     "_string": "ScrollView content",
     "_horizontalAlign": 0,
     "_verticalAlign": 1,
-    "_actualFontSize": 26,
+    "_actualFontSize": 25,
     "_fontSize": 25,
     "_fontFamily": "Arial",
     "_lineHeight": 30,
-    "_overflow": 2,
+    "_overflow": 3,
     "_enableWrapText": true,
     "_font": null,
     "_isSystemFontUsed": true,
@@ -172,7 +172,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "54942a0e-4259-4575-89d0-c2374f4c569d"
+      "__id__": 0
     },
     "fileId": "a5sfFQKghHe7megSUaBN2U"
   }
