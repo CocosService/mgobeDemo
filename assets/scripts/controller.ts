@@ -20,16 +20,15 @@ const config: MGOBE.types.ConfigPara = {
 import {
     _decorator,
     Component,
-    Node,
     Prefab,
     Button,
     instantiate,
     Label,
     ScrollView,
-    Asset,
     sys,
     loader,
     log,
+    url as ccUrl,
 } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -56,9 +55,6 @@ export class Controller extends Component {
     joinLeaveRoomLabel: Label = null!;
     @property({ type: Label })
     startStopFrameSyncLabel: Label = null!;
-
-    @property({ type: Asset })
-    cacertFile: Asset = null!;
 
     private room: MGOBE.Room | null = null;
     private joinedRoom: boolean = false;
@@ -106,9 +102,11 @@ export class Controller extends Component {
         this.initButton.interactable = false;
 
         if (sys.isNative) {
+            const ccUrlAny: any = ccUrl;
+            const pemUrl = ccUrlAny.raw('resources/cacert.pem');
             config.cacertNativeUrl = loader.md5Pipe
-                ? loader.md5Pipe.transformURL(this.cacertFile.nativeUrl)
-                : this.cacertFile.nativeUrl;
+                ? loader.md5Pipe.transformURL(pemUrl)
+                : pemUrl;
         }
 
         MGOBE.Listener.init(gameInfo, config, (event) => {
