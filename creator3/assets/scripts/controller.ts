@@ -152,11 +152,10 @@ export class Controller extends Component {
             this.room.matchRoom(matchRoomPara, (event) => {
                 if (event.code === MGOBE.ErrCode.EC_OK) {
                     this.log('匹配成功');
-                    this.joinLeaveRoomLabel.string = '离开房间';
                     this.sendMessageButton.interactable = true;
                     this.startStopFrameSyncButton.interactable = true;
                     this.sendToServerButton.interactable = true;
-                    this.joinedRoom = true;
+                    this.setJoinedRoomState(true);
                 } else {
                     this.log('匹配失败');
                 }
@@ -173,11 +172,11 @@ export class Controller extends Component {
                         return;
                     }
                     this.room.initRoom();
-                    this.joinLeaveRoomLabel.string = '加入房间';
                     this.sendMessageButton.interactable = false;
                     this.startStopFrameSyncButton.interactable = false;
                     this.sendToServerButton.interactable = false;
-                    this.joinedRoom = false;
+                    this.setJoinedRoomState(false);
+                    this.setFrameSyncStartedState(false);
                 } else {
                     this.log('退房失败');
                 }
@@ -275,6 +274,10 @@ export class Controller extends Component {
             return;
         }
 
+        if (!this.frameSyncStarted) {
+            this.setFrameSyncStartedState(true);
+        }
+
         this.room.sendFrame(
             {
                 data: {
@@ -291,15 +294,13 @@ export class Controller extends Component {
     private onStartFrameSync(
         _event: MGOBE.types.BroadcastEvent<MGOBE.types.StartFrameSyncBst>
     ): any {
-        this.startStopFrameSyncLabel.string = '停止帧同步';
-        this.frameSyncStarted = true;
+        this.setFrameSyncStartedState(true);
     }
 
     private onStopFrameSync(
         _event: MGOBE.types.BroadcastEvent<MGOBE.types.StopFrameSyncBst>
     ): any {
-        this.startStopFrameSyncLabel.string = '开始帧同步';
-        this.frameSyncStarted = false;
+        this.setFrameSyncStartedState(false);
     }
 
     private onRecvFromGameSvr(
@@ -307,6 +308,25 @@ export class Controller extends Component {
     ): any {
         this.log('自定义服务器消息', event.data);
     }
+
+    private setJoinedRoomState(joined: boolean) {
+        this.joinedRoom = joined;
+        if (this.joinedRoom) {
+            this.joinLeaveRoomLabel.string = '离开房间';
+        } else {
+            this.joinLeaveRoomLabel.string = '加入房间';
+        }
+    }
+
+    private setFrameSyncStartedState(started: boolean) {
+        this.frameSyncStarted = started;
+        if (this.frameSyncStarted) {
+            this.startStopFrameSyncLabel.string = '停止帧同步';
+        } else {
+            this.startStopFrameSyncLabel.string = '开始帧同步';
+        }
+    }
+
 }
 
 function generateRandomInteger(min: number, max: number) {
