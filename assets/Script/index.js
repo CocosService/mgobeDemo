@@ -1,6 +1,7 @@
 const gameId = ""; //替换为控制台上的 游戏 ID
 const secretKey = ""; //替换为控制台上的 游戏 Key
 const serverUrl = ""; //替换为控制台上的 域名
+
 if (CC_EDITOR) {
   if (!Editor.CocosService_mgobeDemo) {
     Editor.CocosService_mgobeDemo = true;
@@ -111,8 +112,8 @@ cc.Class({
     this.btnFrameSync.interactable = false;
     this.btnSendToServer.interactable = false;
     this.lang = cc.sys.language;
-    this.labelJoin.string = "加入房间";
-    this.labelFrameSync.string = "开始帧同步";
+    this.setJoinedRoomState(false);
+    this.setFrameSyncState(false);
     this.tempText = "";
     this.tempSize = 0;
     this.tempTop = 0;
@@ -128,13 +129,17 @@ cc.Class({
   },
 
   init: function() {
+    this.btnInit.interactable = false;
+
     const _self = this;
     // MGOBE.DebuggerLog.enable = true;
     // 如果是原生平台，则加载 Cert 证书，否则会提示 WSS 错误
-    if (cc.sys.isNative)
-      config.cacertNativeUrl = cc.loader.md5Pipe
-        ? cc.loader.md5Pipe.transformURL(this.cacertFile.nativeUrl)
-        : this.cacertFile.nativeUrl;
+    if (cc.sys.isNative) {
+      config.cacertNativeUrl = cc.loader.md5Pipe && cc.ENGINE_VERSION < "2.4.0" ?
+        cc.loader.md5Pipe.transformURL(this.cacertFile.nativeUrl) :
+        this.cacertFile.nativeUrl;
+    }
+
     MGOBE.Listener.init(gameInfo, config, event => {
       console.log(event);
       if (event.code === 0) {
@@ -151,6 +156,7 @@ cc.Class({
         _self.btnJoin.interactable = true;
       } else {
         _self.printLog("初始化失败");
+        this.btnInit.interactable = true;
       }
     });
   },
@@ -163,11 +169,11 @@ cc.Class({
         if (event.code === 0) {
           _self.printLog("退房成功", _self.room.roomInfo.id);
           _self.room.initRoom();
-          _self.labelJoin.string = "加入房间";
           _self.btnSendMessage.interactable = false;
           _self.btnFrameSync.interactable = false;
           _self.btnSendToServer.interactable = false;
-          _self.joined = false;
+          this.setJoinedRoomState(false);
+          this.setFrameSyncState(false);
         }
       });
     } else {
@@ -175,11 +181,10 @@ cc.Class({
         console.log(event);
         if (event.code === 0) {
           _self.printLog("匹配成功");
-          _self.labelJoin.string = "离开房间";
           _self.btnSendMessage.interactable = true;
           _self.btnFrameSync.interactable = true;
           _self.btnSendToServer.interactable = true;
-          _self.joined = true;
+          this.setJoinedRoomState(true);
         } else {
           _self.printLog("匹配失败");
         }
@@ -203,8 +208,7 @@ cc.Class({
         console.log(event);
         if (event.code === 0) {
           _self.printLog("停止帧同步成功");
-          _self.labelFrameSync.string = "开始帧同步";
-          _self.synced = false;
+          this.setFrameSyncState(false);
         }
       });
     } else {
@@ -212,8 +216,7 @@ cc.Class({
         console.log(event);
         if (event.code === 0) {
           _self.printLog("开始帧同步成功，请到控制台查看具体帧同步信息");
-          _self.labelFrameSync.string = "停止帧同步";
-          _self.synced = true;
+          this.setFrameSyncState(true);
         }
       });
     }
@@ -259,6 +262,10 @@ cc.Class({
   },
 
   onRecvFrame: function(event) {
+    if (!this.synced) {
+        this.setFrameSyncState(true);
+    }
+
     this.sendFrame();
     console.log("帧广播", event.data.frame);
     if (event.data.frame.items && event.data.frame.items.length > 0) {
@@ -268,20 +275,33 @@ cc.Class({
   },
 
   onStartFrameSync: function(event) {
-    this.synced = true;
-    this.labelFrameSync.string = "停止帧同步";
+    this.setFrameSyncState(true);
     //this.printLog("开始帧同步\n");
   },
 
   onStopFrameSync: function(event) {
-    this.synced = false;
-    this.labelFrameSync.string = "开始帧同步";
+    this.setFrameSyncState(false);
     //this.printLog("停止帧同步\n");
   },
 
   onRecvFromGameSvr: function(event) {
+    this.printLog("新自定义服务消息" + JSON.stringify(event));
     console.log("新自定义服务消息", event);
-    //this.printLog("新自定义服务消息" + JSON.stringify(event));
+  },
+
+  setJoinedRoomState: function(joined) {
+    this.joined = joined;
+    let label = "加入房间";
+    if (this.joined) label = '离开房间';
+    this.labelJoin.string = label;
+  },
+
+
+  setFrameSyncState: function (synced) {
+    this.synced = synced;
+    let label = '开始帧同步';
+    if (this.synced) label = '停止帧同步';
+    this.labelFrameSync.string = label;
   },
 
   printCode: function(code) {
